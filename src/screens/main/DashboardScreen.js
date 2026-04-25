@@ -9,6 +9,7 @@ import { colors } from '../../theme/colors';
 import { typography } from '../../theme/typography';
 import { TransactionItem } from '../../components/TransactionItem';
 import { useCurrency } from '../../context/CurrencyContext';
+import { API_URL } from '../../config';
 
 export default function DashboardScreen({ navigation }) {
   const { currency } = useCurrency();
@@ -58,25 +59,42 @@ export default function DashboardScreen({ navigation }) {
         setUserName(storedName);
       }
       
-      const response = await fetch('http://10.25.198.38:5000/expenses', {
+      const response = await fetch(`${API_URL}/expenses`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
+      
       if (response.ok) {
         const data = await response.json();
         setTransactions(data);
         
-        let inc = 0;
-        let exp = 0;
-        data.forEach(t => {
-          if (t.type === 'income') inc += t.amount;
-          else exp += t.amount;
-        });
-        setTotalIncome(inc);
-        setTotalExpense(exp);
+        // Offline Cache: Save fetched data to AsyncStorage
+        await AsyncStorage.setItem('cached_transactions', JSON.stringify(data));
+        
+        updateTotals(data);
+      } else {
+        throw new Error('Server returned an error');
       }
     } catch (e) {
-      console.error(e);
+      console.log('Network error, loading from cache:', e);
+      // Fallback: Load from cache
+      const cachedData = await AsyncStorage.getItem('cached_transactions');
+      if (cachedData) {
+        const data = JSON.parse(cachedData);
+        setTransactions(data);
+        updateTotals(data);
+      }
     }
+  };
+
+  const updateTotals = (data) => {
+    let inc = 0;
+    let exp = 0;
+    data.forEach(t => {
+      if (t.type === 'income') inc += t.amount;
+      else exp += t.amount;
+    });
+    setTotalIncome(inc);
+    setTotalExpense(exp);
   };
 
   const categories = [
