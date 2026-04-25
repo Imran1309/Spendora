@@ -23,26 +23,40 @@ const AppTheme = {
   },
 };
 
+import { AuthContext } from '../context/AuthContext';
+
 export const AppNavigator = () => {
+  const { user, loading } = React.useContext(AuthContext);
+
+  if (loading) {
+    return null; // Or a splash screen
+  }
+
   return (
     <NavigationContainer theme={AppTheme}>
       <Stack.Navigator
-        initialRouteName="Login"
         screenOptions={{
           headerShown: false,
           contentStyle: { backgroundColor: colors.background },
         }}
       >
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="Register" component={RegisterScreen} />
-        <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
-        <Stack.Screen name="VerifyOTP" component={VerifyOTPScreen} />
-        <Stack.Screen name="Main" component={DashboardScreen} />
-        <Stack.Group screenOptions={{ presentation: 'modal' }}>
-          <Stack.Screen name="AddExpense" component={AddExpenseScreen} />
-          <Stack.Screen name="EditExpense" component={EditExpenseScreen} />
-          <Stack.Screen name="Currency" component={CurrencyScreen} />
-        </Stack.Group>
+        {!user ? (
+          <>
+            <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen name="Register" component={RegisterScreen} />
+            <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
+            <Stack.Screen name="VerifyOTP" component={VerifyOTPScreen} />
+          </>
+        ) : (
+          <>
+            <Stack.Screen name="Main" component={DashboardScreen} />
+            <Stack.Group screenOptions={{ presentation: 'modal' }}>
+              <Stack.Screen name="AddExpense" component={AddExpenseScreen} />
+              <Stack.Screen name="EditExpense" component={EditExpenseScreen} />
+              <Stack.Screen name="Currency" component={CurrencyScreen} />
+            </Stack.Group>
+          </>
+        )}
       </Stack.Navigator>
     </NavigationContainer>
   );

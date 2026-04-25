@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, Text, StyleSheet, KeyboardAvoidingView, Platform, TouchableOpacity, Alert } from 'react-native';
 import { EnvelopeSimple, LockKey, User } from 'phosphor-react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -6,11 +6,14 @@ import { colors } from '../../theme/colors';
 import { typography } from '../../theme/typography';
 import { Input } from '../../components/Input';
 import { GradientButton } from '../../components/GradientButton';
+import { AuthContext } from '../../context/AuthContext';
+import { API_URL } from '../../config';
 
 export default function RegisterScreen({ navigation }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const { login } = useContext(AuthContext);
 
   const handleRegister = async () => {
     if (!name || !email || !password) {
@@ -19,7 +22,7 @@ export default function RegisterScreen({ navigation }) {
     }
 
     try {
-      const response = await fetch('http://10.25.198.38:5000/auth/register', {
+      const response = await fetch(`${API_URL}/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -30,10 +33,12 @@ export default function RegisterScreen({ navigation }) {
       const data = await response.json();
 
       if (response.ok) {
-        await AsyncStorage.setItem('token', data.token);
-        if (data.user && data.user.name) {
-          await AsyncStorage.setItem('userName', data.user.name);
-        }
+        await login({
+          token: data.token,
+          name: data.user.name,
+          email: data.user.email,
+          id: data.user.id
+        });
         alert('Account created successfully!');
         navigation.replace('Main');
       } else {
