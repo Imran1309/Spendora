@@ -20,10 +20,17 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
+      "package": "com.imranss.spendora",
       "edgeToEdgeEnabled": true
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "5bcba5eb-c418-4698-9890-56e1d2495024"
+      }
+    },
+    "owner": "imran.s.s"
   }
 }
