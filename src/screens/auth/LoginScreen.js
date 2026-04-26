@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { View, Text, StyleSheet, KeyboardAvoidingView, Platform, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, KeyboardAvoidingView, Platform, TouchableOpacity, Alert, Image } from 'react-native';
 import { EnvelopeSimple, LockKey } from 'phosphor-react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { colors } from '../../theme/colors';
@@ -55,7 +55,12 @@ export default function LoginScreen({ navigation }) {
     >
       <View style={styles.content}>
         <View style={styles.header}>
-          <Text style={styles.title}>Welcome back</Text>
+          <Image 
+            source={require('../../../assets/icon.png')} 
+            style={styles.logo}
+            resizeMode="contain"
+          />
+          <Text style={styles.title}>Spendora</Text>
           <Text style={styles.subtitle}>Log in to manage your finances</Text>
         </View>
 
@@ -110,15 +115,24 @@ const styles = StyleSheet.create({
   },
   header: {
     marginBottom: 48,
+    alignItems: 'center',
+  },
+  logo: {
+    width: 100,
+    height: 100,
+    marginBottom: 16,
+    borderRadius: 24,
   },
   title: {
     ...typography.h1,
     color: colors.textPrimary,
     marginBottom: 8,
+    textAlign: 'center',
   },
   subtitle: {
     ...typography.body,
     color: colors.textSecondary,
+    textAlign: 'center',
   },
   form: {
     marginBottom: 48,

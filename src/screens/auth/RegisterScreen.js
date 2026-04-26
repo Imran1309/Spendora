@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { View, Text, StyleSheet, KeyboardAvoidingView, Platform, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, KeyboardAvoidingView, Platform, TouchableOpacity, Alert, Image } from 'react-native';
 import { EnvelopeSimple, LockKey, User } from 'phosphor-react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { colors } from '../../theme/colors';
@@ -57,7 +57,12 @@ export default function RegisterScreen({ navigation }) {
     >
       <View style={styles.content}>
         <View style={styles.header}>
-          <Text style={styles.title}>Create Account</Text>
+          <Image 
+            source={require('../../../assets/icon.png')} 
+            style={styles.logo}
+            resizeMode="contain"
+          />
+          <Text style={styles.title}>Spendora</Text>
           <Text style={styles.subtitle}>Start tracking your expenses today</Text>
         </View>
 
@@ -113,16 +118,25 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   header: {
-    marginBottom: 48,
+    marginBottom: 40,
+    alignItems: 'center',
+  },
+  logo: {
+    width: 80,
+    height: 80,
+    marginBottom: 16,
+    borderRadius: 20,
   },
   title: {
     ...typography.h1,
     color: colors.textPrimary,
     marginBottom: 8,
+    textAlign: 'center',
   },
   subtitle: {
     ...typography.body,
     color: colors.textSecondary,
+    textAlign: 'center',
   },
   form: {
     marginBottom: 48,
