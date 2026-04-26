@@ -7,6 +7,7 @@ import { colors } from '../../theme/colors';
 import { typography } from '../../theme/typography';
 import { GradientButton } from '../../components/GradientButton';
 import { useCurrency } from '../../context/CurrencyContext';
+import { API_URL } from '../../config';
 
 const CATEGORIES = [
   { id: 'food', icon: Coffee, color: '#F59E0B' },
@@ -45,7 +46,7 @@ export default function AddExpenseScreen({ navigation }) {
     try {
       const token = await AsyncStorage.getItem('token');
 
-      const response = await fetch('http://10.25.198.38:5000/expenses', {
+      const response = await fetch(`${API_URL}/expenses`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
