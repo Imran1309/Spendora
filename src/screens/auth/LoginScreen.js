@@ -29,7 +29,15 @@ export default function LoginScreen({ navigation }) {
         body: JSON.stringify({ email, password }),
       });
 
-      const data = await response.json();
+      const text = await response.text();
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (e) {
+        console.error('Login response parse error:', e, 'Raw:', text.substring(0, 100));
+        alert('Server returned an invalid response. Please try again later.');
+        return;
+      }
 
       if (response.ok) {
         await login({
@@ -38,7 +46,6 @@ export default function LoginScreen({ navigation }) {
           email: data.user.email,
           id: data.user.id
         });
-        navigation.replace('Main');
       } else {
         alert(data.message || 'Invalid credentials');
       }
@@ -56,7 +63,7 @@ export default function LoginScreen({ navigation }) {
       <View style={styles.content}>
         <View style={styles.header}>
           <Image 
-            source={require('../../../assets/icon.png')} 
+            source={require('../../../assets/spendora.png')} 
             style={styles.logo}
             resizeMode="contain"
           />

@@ -5,6 +5,7 @@ import { colors } from '../../theme/colors';
 import { typography } from '../../theme/typography';
 import { Input } from '../../components/Input';
 import { GradientButton } from '../../components/GradientButton';
+import { API_URL } from '../../config';
 
 export default function ForgotPasswordScreen({ navigation }) {
   const [email, setEmail] = useState('');
@@ -14,12 +15,21 @@ export default function ForgotPasswordScreen({ navigation }) {
     if (!email) { alert('Please enter your email'); return; }
     setLoading(true);
     try {
-      const res = await fetch('http://10.25.198.38:5000/forgot-password/send-otp', {
+      const res = await fetch(`${API_URL}/forgot-password/send-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
       });
-      const data = await res.json();
+      const text = await res.text();
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (err) {
+        console.error('OTP Send parse error:', err, text);
+        alert('Server returned an invalid response. Please try again.');
+        setLoading(false);
+        return;
+      }
       if (res.ok) {
         alert('OTP sent! Check your email inbox.');
         navigation.navigate('VerifyOTP', { email });

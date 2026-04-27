@@ -9,10 +9,12 @@ import { colors } from '../../theme/colors';
 import { typography } from '../../theme/typography';
 import { TransactionItem } from '../../components/TransactionItem';
 import { useCurrency } from '../../context/CurrencyContext';
+import { AuthContext } from '../../context/AuthContext';
 import { API_URL } from '../../config';
 
 export default function DashboardScreen({ navigation }) {
   const { currency } = useCurrency();
+  const { logout } = React.useContext(AuthContext);
   const isFocused = useIsFocused();
   const [transactions, setTransactions] = useState([]);
   const [totalIncome, setTotalIncome] = useState(0);
@@ -63,25 +65,37 @@ export default function DashboardScreen({ navigation }) {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       
+      const text = await response.text();
+      
       if (response.ok) {
-        const data = await response.json();
-        setTransactions(data);
-        
-        // Offline Cache: Save fetched data to AsyncStorage
-        await AsyncStorage.setItem('cached_transactions', JSON.stringify(data));
-        
-        updateTotals(data);
+        try {
+          const data = JSON.parse(text);
+          setTransactions(data);
+          
+          // Offline Cache: Save fetched data to AsyncStorage
+          await AsyncStorage.setItem('cached_transactions', JSON.stringify(data));
+          
+          updateTotals(data);
+        } catch (parseError) {
+          console.error('Failed to parse expenses JSON:', parseError, 'Raw response:', text.substring(0, 100));
+          throw new Error('Invalid data format from server');
+        }
       } else {
         throw new Error('Server returned an error');
       }
     } catch (e) {
-      console.log('Network error, loading from cache:', e);
+      console.log('Fetch error or bad data, checking cache:', e.message);
       // Fallback: Load from cache
-      const cachedData = await AsyncStorage.getItem('cached_transactions');
-      if (cachedData) {
-        const data = JSON.parse(cachedData);
-        setTransactions(data);
-        updateTotals(data);
+      try {
+        const cachedData = await AsyncStorage.getItem('cached_transactions');
+        if (cachedData) {
+          const data = JSON.parse(cachedData);
+          setTransactions(data);
+          updateTotals(data);
+        }
+      } catch (cacheError) {
+        console.error('Failed to parse cached transactions:', cacheError);
+        await AsyncStorage.removeItem('cached_transactions');
       }
     }
   };
@@ -129,7 +143,7 @@ export default function DashboardScreen({ navigation }) {
           {/* Silver Coin Logout Button */}
           <TouchableOpacity 
             style={styles.silverCoinBtn}
-            onPress={() => navigation.replace('Login')}
+            onPress={logout}
             activeOpacity={0.8}
           >
             <View style={styles.silverCoinInner}>

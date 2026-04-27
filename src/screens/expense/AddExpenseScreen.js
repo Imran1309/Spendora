@@ -60,11 +60,17 @@ export default function AddExpenseScreen({ navigation }) {
         }),
       });
 
+      const text = await response.text();
       if (response.ok) {
         navigation.goBack();
       } else {
-        const data = await response.json();
-        alert(data.message || 'Failed to save');
+        try {
+          const data = JSON.parse(text);
+          alert(data.message || 'Failed to save');
+        } catch (e) {
+          console.error('Add expense error parse failed:', e, text);
+          alert('Failed to save. Server returned an invalid response.');
+        }
       }
     } catch (error) {
       console.error(error);

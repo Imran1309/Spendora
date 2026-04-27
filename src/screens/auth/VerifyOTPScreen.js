@@ -5,6 +5,7 @@ import { colors } from '../../theme/colors';
 import { typography } from '../../theme/typography';
 import { Input } from '../../components/Input';
 import { GradientButton } from '../../components/GradientButton';
+import { API_URL } from '../../config';
 
 export default function VerifyOTPScreen({ route, navigation }) {
   const { email } = route.params;
@@ -28,12 +29,21 @@ export default function VerifyOTPScreen({ route, navigation }) {
     if (otpString.length < 6) { alert('Please enter the 6-digit OTP'); return; }
     setLoading(true);
     try {
-      const res = await fetch('http://10.25.198.38:5000/forgot-password/verify-otp', {
+      const res = await fetch(`${API_URL}/forgot-password/verify-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, otp: otpString }),
       });
-      const data = await res.json();
+      const text = await res.text();
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (err) {
+        console.error('Verify OTP parse error:', err, text);
+        alert('Server returned an invalid response. Please try again.');
+        setLoading(false);
+        return;
+      }
       if (res.ok) {
         setStep('reset');
       } else {
@@ -52,12 +62,21 @@ export default function VerifyOTPScreen({ route, navigation }) {
     }
     setLoading(true);
     try {
-      const res = await fetch('http://10.25.198.38:5000/forgot-password/reset-password', {
+      const res = await fetch(`${API_URL}/forgot-password/reset-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, otp: otpString, newPassword }),
       });
-      const data = await res.json();
+      const text = await res.text();
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (err) {
+        console.error('Reset password parse error:', err, text);
+        alert('Server returned an invalid response. Please try again.');
+        setLoading(false);
+        return;
+      }
       if (res.ok) {
         alert('Password reset successfully! Please login.');
         navigation.navigate('Login');

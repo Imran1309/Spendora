@@ -45,12 +45,18 @@ export default function EditExpenseScreen({ route, navigation }) {
         body: JSON.stringify({ amount: parseFloat(amount), category, note, type }),
       });
 
+      const text = await response.text();
       if (response.ok) {
         alert('Transaction updated!');
         navigation.goBack();
       } else {
-        const data = await response.json();
-        alert(data.message || 'Update failed');
+        try {
+          const data = JSON.parse(text);
+          alert(data.message || 'Update failed');
+        } catch (err) {
+          console.error('Update expense error parse failed:', err, text);
+          alert('Update failed. Server returned an invalid response.');
+        }
       }
     } catch (e) {
       console.error(e);
@@ -68,12 +74,18 @@ export default function EditExpenseScreen({ route, navigation }) {
         headers: { 'Authorization': `Bearer ${token}` },
       });
 
+      const text = await response.text();
       if (response.ok) {
         alert('Transaction deleted!');
         navigation.goBack();
       } else {
-        const data = await response.json();
-        alert(data.message || 'Delete failed');
+        try {
+          const data = JSON.parse(text);
+          alert(data.message || 'Delete failed');
+        } catch (err) {
+          console.error('Delete expense error parse failed:', err, text);
+          alert('Delete failed. Server returned an invalid response.');
+        }
       }
     } catch (e) {
       console.error(e);

@@ -47,10 +47,21 @@ export const CurrencyProvider = ({ children }) => {
     try {
       const saved = await AsyncStorage.getItem('selectedCurrency');
       if (saved) {
-        setCurrency(JSON.parse(saved));
+        try {
+          const parsed = JSON.parse(saved);
+          if (parsed && typeof parsed === 'object') {
+            setCurrency(parsed);
+          } else {
+            console.warn('Invalid currency format in cache, resetting...');
+            await AsyncStorage.removeItem('selectedCurrency');
+          }
+        } catch (parseError) {
+          console.error('Failed to parse currency JSON:', parseError);
+          await AsyncStorage.removeItem('selectedCurrency');
+        }
       }
     } catch (e) {
-      console.error(e);
+      console.error('AsyncStorage error:', e);
     }
   };
 
