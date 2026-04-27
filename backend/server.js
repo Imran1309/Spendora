@@ -30,8 +30,8 @@ const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/spendora';
 mongoose.connect(MONGO_URI)
   .then(() => {
     console.log('MongoDB connected successfully.');
-    app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`🚀 Server is live! Listening on port ${PORT}`);
     });
   })
   .catch(err => {
