@@ -64,5 +64,8 @@ Spendora/
    ```
 4. Scan the QR code with **Expo Go** or press `a` for Android Emulator.
 
----
-Developed by **Anmol** (Full Stack Intern Assignment)
+### 3. Run process
+```they will make singup a account with there email and password and then they will login and then they will be able to use the app
+```
+
+
